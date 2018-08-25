@@ -259,3 +259,5 @@ if(isset($uploadVoice['id'])) {
 Пример бота созданого на этой основе: https://vk.com/vkbotbyisa1vatore
 
 Исходный код этого бота: https://github.com/iSa1vatore/vk-callback-bot/tree/master/example
+
+По вопросам и предложениям пишите мне в VK: https://vk.com/s9008
