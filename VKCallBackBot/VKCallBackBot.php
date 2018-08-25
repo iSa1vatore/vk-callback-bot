@@ -62,7 +62,7 @@ class VKCallBackBot
 		$this->text = $this->CallBackData['object']['text'];
 	}
 
-	private function GetLastForwardMessage($array)
+	private function GetLastForwardMessage(array $array)
 	{
 		while (1) {
 			if(isset($array[0]['fwd_messages'])) {
