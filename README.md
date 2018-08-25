@@ -191,7 +191,9 @@ $defaultKeyboard = $bot->message
               ->button('Кнопка 4', 'positive', ['thisbutton' => 4])
           ->one_time() //false by default
         ->getKeyboard(); //getKeyboard возвращает строку.
-.......
+	
+..........................
+
 $bot->message
   ->text("Добро пожаловать!")
   ->setKeyboard($defaultKeyboard) //setKeyboard добавляет клавиатуру из переменной.
