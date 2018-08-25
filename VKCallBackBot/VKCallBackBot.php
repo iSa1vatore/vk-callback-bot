@@ -96,7 +96,7 @@ class VKCallBackBot
 				ob_end_flush();
 				flush();
 				ob_end_clean();
-			break;
+				break;
 		}
 	}
 }
