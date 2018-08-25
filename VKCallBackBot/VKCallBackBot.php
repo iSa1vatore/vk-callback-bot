@@ -91,12 +91,12 @@ class VKCallBackBot
 				ob_start();
 
 				echo "ok";
-				
+
 				header("Content-Length: ".ob_get_length());
 				ob_end_flush();
 				flush();
 				ob_end_clean();
-				break;
+			break;
 		}
 	}
 }
