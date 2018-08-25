@@ -117,7 +117,7 @@ class VKCallBackBotAPI
 		]);
 	}
 
-	public function curlRequest($server, $parameters) 
+	public function curlRequest(string $server, array $parameters) 
 	{
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $server);
