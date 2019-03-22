@@ -2,161 +2,210 @@
 
 class VKCallBackBotSend
 {
-	private $text;
-	private $keyboard = [];
-	private $attachments = [];
-	private $countRows = -1;
-	private $forward_messages = [];
-	private $bot;
-	public $receiver;
+    private $text;
+    private $keyboard = [];
+    private $attachments = [];
+    private $countRows = -1;
+    private $forward_messages = [];
+    private $reply_to_mid = '';
+    private $bot;
+    public $alternative_keyboard = false;
+    public $receiver = 0;
 
-	public function __construct($bot)
-	{
-		$this->bot = $bot;
-	}
+    public function __construct($bot)
+    {
+        $this->bot = $bot;
+    }
 
-	public function setReceiver(int $uid)
-	{
-		$this->receiver = $uid;
-	}
+    public function setReceiver(int $uid)
+    {
+        $this->receiver = $uid;
+        return $this;
+    }
 
-	public function text(string $text)
-	{
-		$this->text = $text;
-		return $this;
-	}
+    public function setReceivers(array $uids)
+    {
+        $this->receiver = $uids;
+        return $this;
+    }
 
-	public function keyboard()
-	{
-		$this->keyboard = [
-			'one_time' => null,
-			'buttons' => null
-		];
-		return $this;
-	}
+    public function text(string $text)
+    {
+        $this->text = $text;
+        return $this;
+    }
 
-	public function row()
-	{
-		$this->countRows += 1;
-		return $this;
-	}
+    public function keyboard()
+    {
+        $this->keyboard = [
+            'one_time' => null,
+            'buttons' => null
+        ];
+        return $this;
+    }
 
-	public function button(string $title, string $color, array $payload)
-	{
-		$this->keyboard['buttons'][$this->countRows][] = [
-			'action' => [
-					'type' => 'text',
-					'payload' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-					'label' => mb_strimwidth($title, 0, 35, "...")
-				],
-			'color' => $color
-		];
-		return $this;
-	}
+    public function row()
+    {
+        $this->countRows += 1;
+        return $this;
+    }
 
-	public function one_time(bool $parametr = false)
-	{
-		$this->keyboard['one_time'] = $parametr;
+    public function button(string $title, string $color, array $payload)
+    {
+        $this->keyboard['buttons'][$this->countRows][] = [
+            'action' => [
+                'type' => 'text',
+                'payload' => json_encode($payload, JSON_UNESCAPED_UNICODE),
+                'label' => mb_strimwidth($title, 0, 35, "...")
+            ],
+            'color' => $color
+        ];
+        return $this;
+    }
 
-		$this->keyboard = ['keyboard' => json_encode($this->keyboard, JSON_UNESCAPED_UNICODE)];
-		return $this;
-	}
+    public function one_time(bool $parametr = false)
+    {
+        $this->keyboard['one_time'] = $parametr;
 
-	public function getKeyboard()
-	{
-		$this->countRows = -1;
-		$keyboard = $this->keyboard;
-		$this->keyboard = [];
-		return $keyboard;
-	}
+        if ($this->alternative_keyboard AND is_int($this->receiver)) {
+            $c = 0;
+            $this->text .= "\n\n";
 
-	public function setKeyboard(array $keyboard)
-	{
-		$this->keyboard = $keyboard;
-		return $this;
-	}
+            $keyboardData = [
+                'one_time' => $parametr
+            ];
 
-	public function addPhoto(string $oID = '', string $iID = '')
-	{
-		$this->addAttachment('photo', $oID, $iID);
-		return $this;
-	}
+            foreach ($this->keyboard['buttons'] as $Rows) {
+                foreach ($Rows as $buttons) {
+                    $c++;
+                    $this->text .= $c . '. ' . $buttons['action']['label'] . "\n";
 
-	public function addVideo(string $oID = '', string $iID = '')
-	{
-		$this->addAttachment('video', $oID, $iID);
-		return $this;
-	}
+                    $keyboardData['buttons'][$c] = [
+                        'label' => $buttons['action']['label'],
+                        'payload' => $buttons['action']['payload']
+                    ];
+                }
+            }
 
-	public function addAudio(string $oID = '', string $iID = '')
-	{
-		$this->addAttachment('audio', $oID, $iID);
-		return $this;
-	}
+            $this->bot->mc->set('uKeyboard_' . $this->receiver, $keyboardData);
+        }
 
-	public function addDoc(string $oID = '', string $iID = '')
-	{
-		$this->addAttachment('doc', $oID, $iID);
-		return $this;
-	}
+        $this->keyboard = ['keyboard' => json_encode($this->keyboard, JSON_UNESCAPED_UNICODE)];
 
-	public function addWall(string $oID = '', string $iID = '')
-	{
-		$this->addAttachment('wall', $oID, $iID);
-		return $this;
-	}
+        return $this;
+    }
 
-	private function addAttachment(string $type, $oID = '', $iID = '')
-	{
-		if(stristr($oID, '_') === FALSE) {
-		    $this->attachments[] = $type.$oID.'_'.$iID;
-		} else {
-			$this->attachments[] = $oID;
-		}
-	}
+    public function getKeyboard()
+    {
+        $this->countRows = -1;
+        $keyboard = $this->keyboard;
+        $this->keyboard = [];
+        return $keyboard;
+    }
 
-	public function delete($mid)
-	{
-		if(is_int($mid)) {
-			return $this->bot->api->messageDelete($mid);
-		}
+    public function setKeyboard(array $keyboard)
+    {
+        $this->keyboard = $keyboard;
+        return $this;
+    }
 
-		return ['error' => ['code' => 1, 'message' => 'mid is not a number']];
-	}
+    public function addPhoto(string $oID = '', string $iID = '')
+    {
+        $this->addAttachment('photo', $oID, $iID);
+        return $this;
+    }
 
-	public function send()
-	{
-		$result = $this->bot->api->sendMessage([
-			'receiver' => $this->receiver,
-			'text' => $this->text,
-			'keyboard' => $this->getKeyboard(),
-			'attachments' => $this->attachments,
-			'forward_messages' => $this->forward_messages
-		]);
+    public function addVideo(string $oID = '', string $iID = '')
+    {
+        $this->addAttachment('video', $oID, $iID);
+        return $this;
+    }
 
-		$this->text = '';
-		$this->attachments = [];
-		$this->forward_messages = [];
+    public function addAudio(string $oID = '', string $iID = '')
+    {
+        $this->addAttachment('audio', $oID, $iID);
+        return $this;
+    }
 
-		return $result;
-	}
+    public function addDoc(string $oID = '', string $iID = '')
+    {
+        $this->addAttachment('doc', $oID, $iID);
+        return $this;
+    }
 
-	public function edit($mid)
-	{
-		if(!is_int($mid))
-			return ['error' => ['code' => 1, 'message' => 'mID is not a number.']];
+    public function addWall(string $oID = '', string $iID = '')
+    {
+        $this->addAttachment('wall', $oID, $iID);
+        return $this;
+    }
 
-		$result = $this->bot->api->editMessage([
-			'receiver' => $this->receiver,
-			'message_id' => $mid,
-			'text' => $this->text,
-			'attachments' => $this->attachments,
-		]);
+    private function addAttachment(string $type, $oID = '', $iID = '')
+    {
+        if (stristr($oID, '_') === false) {
+            $this->attachments[] = $type . $oID . '_' . $iID;
+        } else {
+            $this->attachments[] = $oID;
+        }
+    }
 
-		$this->text = '';
-		$this->attachments = [];
-		$this->forward_messages = [];
+    public function delete($mid)
+    {
+        if (is_int($mid)) {
+            return $this->bot->api->messageDelete($mid);
+        }
 
-		return $result;
-	}
+        return ['error' => ['code' => 1, 'message' => 'mid is not a number']];
+    }
+
+    public function reply(int $id)
+    {
+        $this->reply_to_mid = $id;
+
+        return $this;
+    }
+
+    public function forward(int $id)
+    {
+        $this->forward_messages[] = $id;
+
+        return $this;
+    }
+
+    public function send()
+    {
+        $result = $this->bot->api->sendMessage([
+            'receiver' => $this->receiver,
+            'text' => $this->text,
+            'keyboard' => $this->getKeyboard(),
+            'attachments' => $this->attachments,
+            'forward_messages' => $this->forward_messages,
+            'reply_to' => $this->reply_to_mid,
+        ]);
+
+        $this->text = '';
+        $this->attachments = [];
+        $this->forward_messages = [];
+
+        return $result;
+    }
+
+    public function edit($mid)
+    {
+        if (!is_int($mid)) {
+            return ['error' => ['code' => 1, 'message' => 'mID is not a number.']];
+        }
+
+        $result = $this->bot->api->editMessage([
+            'receiver' => $this->receiver,
+            'message_id' => $mid,
+            'text' => $this->text,
+            'attachments' => $this->attachments,
+        ]);
+
+        $this->text = '';
+        $this->attachments = [];
+        $this->forward_messages = [];
+
+        return $result;
+    }
 }
