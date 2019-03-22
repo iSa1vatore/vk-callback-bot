@@ -8,12 +8,12 @@
 require __DIR__.'/VKCallBackBot/VKCallBackBot.php';
 
 $bot = new VKCallBackBot([
-	'access_token' => 'ACCESS_TOKEN',
-	'confirmation_key' => 'CONFIRMATION',
-	'callback_secret' => 'SECRET', //Секретный ключ проверяется, если указан.
-	'fwdMessagesProcess' => true, //Берем команды из сообщений, которые переслал пользователь.
-	'WebServer' => 1, // 1 - nginx; 2 - apache.
-	'vAPI' => '5.80',
+    'access_token' => 'ACCESS_TOKEN',
+    'confirmation_key' => 'CONFIRMATION',
+    'callback_secret' => 'SECRET', //Секретный ключ проверяется, если указан.
+    'fwdMessagesProcess' => true, //Берем команды из сообщений, которые переслал пользователь.
+    'WebServer' => 1, // 1 - nginx; 2 - apache.
+    'vAPI' => '5.92',
 ]);
 ```
 access_token - Ключ доступа к сообществу, получается в настройках>Работа c API>Ключи доступа. Создаем и выдаем все нужные права после чего придет смс на телефон, вводим и получаем токен.
@@ -24,12 +24,12 @@ callback_secret - Секретный ключ, в разделе "CallBack API" 
 
 WebServer - обязательно нужно указать, используется для того, чтобы отправить VK ответ и продолжить выполнение скрипта. Например если вы будете грузить большой фаил пользователю, то VK вывалит TimeOut на запрос и пошлет его повторно.
 
-В разделе "CallBack API" выбираем версию 5.80 и указываем адрес, например https://example.com/index.php, но не нажимаем подтвердить :)
+В разделе "CallBack API" выбираем версию 5.92 и указываем адрес, например https://example.com/index.php, но не нажимаем подтвердить :)
 
 Добавляем обработку событий после объекта:
 ```php
 switch ($bot->event) {
-	case 'confirmation':
+    case 'confirmation':
     exit($bot->confirmation_key);
     break;
 }
@@ -42,18 +42,18 @@ switch ($bot->event) {
 require __DIR__.'/VKCallBackBot/VKCallBackBot.php';
 
 $bot = new VKCallBackBot([
-	'access_token' => '632130721aa8da3183a02e885eef468947a1ac51139d3bee30c546ce118f23ab77f58e0918e08306bf00k',
-	'confirmation_key' => '7c5478f7',
-	'callback_secret' => '7c7c5478f7547c5478f778f7', //Секретный ключ проверяется, если указан.
-	'fwdMessagesProcess' => true, //Берем команды из сообщений, которые переслал пользователь.
-	'WebServer' => 1, // 1 - nginx; 2 - apache.
-	'vAPI' => '5.80',
+    'access_token' => '632130721aa8da3183a02e885eef468947a1ac51139d3bee30c546ce118f23ab77f58e0918e08306bf00k',
+    'confirmation_key' => '7c5478f7',
+    'callback_secret' => '7c7c5478f7547c5478f778f7', //Секретный ключ проверяется, если указан.
+    'fwdMessagesProcess' => true, //Берем команды из сообщений, которые переслал пользователь.
+    'WebServer' => 1, // 1 - nginx; 2 - apache.
+    'vAPI' => '5.92',
 ]);
 
 switch ($bot->event) {
-	case 'confirmation':
-		exit($bot->confirmation_key);
-		break;
+    case 'confirmation':
+        exit($bot->confirmation_key);
+        break;
 }
 ```
 
@@ -62,30 +62,30 @@ switch ($bot->event) {
 
 ```php
 switch ($bot->event) {
-	case 'message_new':
-		
-		//Обрабатывает сообщение пользователя и вводит нужные переменные.
-		$bot->MessageProcessing();
+    case 'message_new':
 
-		switch ($bot->command) {
-			case 'start':
-			case 'начать':
-				$bot->message
-					->text("Добро пожаловать!")
-				->send();
-				break;
-			default:
-				$bot->message
-					->text("Команда не найдена.")
-				->send();
-				break;
-		}
+        //Обрабатывает сообщение пользователя и вводит нужные переменные.
+        $bot->MessageProcessing();
 
-		break;
+        switch ($bot->command) {
+            case 'start':
+            case 'начать':
+                $bot->message
+                    ->text("Добро пожаловать!")
+                    ->send();
+                break;
+            default:
+                $bot->message
+                    ->text("Команда не найдена.")
+                    ->send();
+                break;
+        }
 
-	case 'confirmation':
-		exit($bot->confirmation_key);
-		break;
+    break;
+
+    case 'confirmation':
+        exit($bot->confirmation_key);
+        break;
 }
 
 $bot->sendOK();
@@ -98,8 +98,8 @@ $bot->sendOK();
 
 ```php
 $bot->message
-  ->text("Текст")
-->send();
+    ->text("Текст")
+    ->send();
 ```
 
 Также можно прикрепить вложения:
@@ -107,59 +107,59 @@ $bot->message
 Прикрепление изображения:
 ```php
 $bot->message
-   ->addPhoto('photo137371466_325103360') //1 метод
-   ->addPhoto(137371466, 456239044) // 2 метод
-   ->text("Текст")
-->send();
+    ->addPhoto('photo137371466_325103360') //1 метод
+    ->addPhoto(137371466, 456239044) // 2 метод
+    ->text("Текст")
+    ->send();
 ```
 Прикрепление документа:
 ```php
 $bot->message
-  ->addDoc('doc-166966945_472727937') //1 метод
-  ->addDoc(-166966945, 472727937) // 2 метод
-  ->text("Текст")
-->send();
+    ->addDoc('doc-166966945_472727937') //1 метод
+    ->addDoc(-166966945, 472727937) // 2 метод
+    ->text("Текст")
+    ->send();
 ```
 Прикрепление видео:
 ```php
 $bot->message
-  ->addVideo('video277941697_456239037') //1 метод
-  ->addVideo(277941697, 456239037) // 2 метод
-  ->text("Текст")
-->send();
+    ->addVideo('video277941697_456239037') //1 метод
+    ->addVideo(277941697, 456239037) // 2 метод
+    ->text("Текст")
+    ->send();
 ```
 Прикрепление аудиозаписи:
 ```php
 $bot->message
-  ->addAudio('audio137371466_456239655') //1 метод
-  ->addAudio(137371466, 456239655) // 2 метод
-  ->text("Текст")
-->send();
+    ->addAudio('audio137371466_456239655') //1 метод
+    ->addAudio(137371466, 456239655) // 2 метод
+    ->text("Текст")
+    ->send();
 ```
 Прикрепление записи:
 ```php
 $bot->message
-  ->addWall('wall137371466_2811') //1 метод
-  ->addWall(137371466, 2811) // 2 метод
-  ->text("Текст")
-->send();
+    ->addWall('wall137371466_2811') //1 метод
+    ->addWall(137371466, 2811) // 2 метод
+    ->text("Текст")
+    ->send();
 ```
 
 Добавление клавиатуры:
 ```php
 $bot->message
-  ->keyboard()
+    ->keyboard()
     ->row()
-      ->button('Кнопка 1 в первом ряду', 'positive', ['command' => 'start'])
-      ->button('Кнопка 2 в первом ряду', 'positive', ['iSa1vatore' => 'Sexy boy'])
+    ->button('Кнопка 1 в первом ряду', 'positive', ['command' => 'start'])
+    ->button('Кнопка 2 в первом ряду', 'positive', ['iSa1vatore' => 'Sexy boy'])
     ->row()
-      ->button('Кнопка 1 во втором ряду', 'positive', [])
-      ->button('Кнопка 2 во втором ряду', 'positive', [])
+    ->button('Кнопка 1 во втором ряду', 'positive', [])
+    ->button('Кнопка 2 во втором ряду', 'positive', [])
     ->row()
-      ->button('Кнопка 1 третьем ряду', 'positive', ['command' => 'sendAttach', 'parametr' => 5])
-  ->one_time() //false by default
-  ->text("Клацни на кнопошку")
-->send();
+    ->button('Кнопка 1 третьем ряду', 'positive', ['command' => 'sendAttach', 'parametr' => 5])
+    ->one_time() //false by default
+    ->text("Клацни на кнопошку")
+    ->send();
 ```
 
 Для создания массива клавиатуры вызовите ->keyboard()
@@ -182,22 +182,20 @@ $bot->message
 Помещение клавиатуры в переменную и отправка:
 ```php
 $defaultKeyboard = $bot->message
-          ->keyboard()
-            ->row()
-              ->button('Кнопка 1', 'primary', ['command' => 'clickbutton', 'parametr' => 1])
-              ->button('Кнопка 2', 'primary', ['command' => 'clickbutton', 'parametr' => 2])
-            ->row()
-              ->button('Кнопка 3', 'positive', ['thisbutton' => 3])
-              ->button('Кнопка 4', 'positive', ['thisbutton' => 4])
-          ->one_time() //false by default
-        ->getKeyboard(); //getKeyboard возвращает строку.
-	
-..........................
+->keyboard()
+    ->row()
+    ->button('Кнопка 1', 'primary', ['command' => 'clickbutton', 'parametr' => 1])
+    ->button('Кнопка 2', 'primary', ['command' => 'clickbutton', 'parametr' => 2])
+    ->row()
+    ->button('Кнопка 3', 'positive', ['thisbutton' => 3])
+    ->button('Кнопка 4', 'positive', ['thisbutton' => 4])
+    ->one_time() //false by default
+    ->getKeyboard(); //getKeyboard возвращает строку.
 
 $bot->message
-  ->text("Добро пожаловать!")
-  ->setKeyboard($defaultKeyboard) //setKeyboard добавляет клавиатуру из переменной.
-->send();
+    ->text("Добро пожаловать!")
+    ->setKeyboard($defaultKeyboard) //setKeyboard добавляет клавиатуру из переменной.
+    ->send();
 ```
 Чтобы удалить сообщение вызовите метод delete у объекта message передав в параметр ID сообщения.
 
@@ -228,9 +226,9 @@ $bot->sendOK(false);
 $uploadPhoto = $bot->api->uploadPhoto(__DIR__.'/assets/image.jpg');
 
 if(isset($uploadPhoto['id'])) {
-  $bot->message
-    ->addPhoto($uploadPhoto['oid'], $uploadPhoto['id'])
-    ->send();
+    $bot->message
+        ->addPhoto($uploadPhoto['oid'], $uploadPhoto['id'])
+        ->send();
 } else {
   $bot->message->text("Возникла ошибка при загрузке.")->send();
 }
@@ -239,9 +237,9 @@ if(isset($uploadPhoto['id'])) {
 $uploadDoc = $bot->api->uploadDoc(__DIR__.'/assets/file.txt', 'Название');
 
 if(isset($uploadDoc['id'])) {
-  $bot->message
-    ->addDoc($uploadDoc['oid'], $uploadDoc['id'])
-    ->send();
+    $bot->message
+        ->addDoc($uploadDoc['oid'], $uploadDoc['id'])
+        ->send();
 } else {
   $bot->message->text("Возникла ошибка при загрузке.")->send();
 }
@@ -250,9 +248,9 @@ if(isset($uploadDoc['id'])) {
 $uploadVoice = $bot->api->uploadVoice(__DIR__.'/assets/click_audio.wav');
 
 if(isset($uploadVoice['id'])) {
-  $bot->message
-    ->addDoc($uploadVoice['oid'], $uploadVoice['id'])
-    ->send();
+    $bot->message
+        ->addDoc($uploadVoice['oid'], $uploadVoice['id'])
+        ->send();
 } else {
   $bot->message->text("Возникла ошибка при загрузке.")->send();
 }
