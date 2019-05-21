@@ -157,6 +157,11 @@ class VKCallBackBot
         $this->commandOptions = $MessageParts;
     }
 
+    public function commandSet(string $command)
+    {
+        $this->command = $command;
+    }
+
     private function GetLastForwardMessage(array $array)
     {
         while (1) {
